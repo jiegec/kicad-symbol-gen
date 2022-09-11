@@ -1,4 +1,5 @@
 import enum
+from typing import Optional
 import yaml
 import click
 import sexpdata
@@ -8,15 +9,19 @@ unit = 2.54
 half_unit = 2.54 / 2
 
 
-def gen_property(key: str, value: str, id: int, x: float, y: float, hidden: bool):
+def gen_property(key: str, value: str, id: int, x: float, y: float, hidden: bool, justify: Optional[str] = None):
     if hidden:
         hidden_sexp = [Symbol('hide')]
     else:
         hidden_sexp = []
+    if justify:
+        justify_sexp = [[Symbol('justify'), Symbol(justify)]]
+    else:
+        justify_sexp = []
     return [Symbol('property'), key, value,
             [Symbol('id'), id], [Symbol('at'), x, y, 0],
             [Symbol('effects'), [Symbol('font'), [
-                Symbol('size'), half_unit, half_unit]]] + hidden_sexp
+                Symbol('size'), half_unit, half_unit]]] + hidden_sexp + justify_sexp
             ]
 
 
@@ -67,9 +72,9 @@ def work(
         symbol_sexp.append([Symbol('in_bom'), Symbol('yes')])
         symbol_sexp.append([Symbol('on_board'), Symbol('yes')])
         symbol_sexp.append(gen_property(
-            "Reference", "U", 0, -width / 2 + unit / 2, height / 2 + unit / 2, False))
+            "Reference", "U", 0, -width / 2, height / 2 + unit / 2, False, 'left'))
         symbol_sexp.append(gen_property(
-            "Value", name, 1, width / 2 - unit / 2, height / 2 + unit / 2, False))
+            "Value", name, 1, width / 2, height / 2 + unit / 2, False, 'right'))
         symbol_sexp.append(gen_property("Footprint", "", 2, 0, 0, True))
         symbol_sexp.append(gen_property("Datasheet", "", 3, 0, 0, True))
 
