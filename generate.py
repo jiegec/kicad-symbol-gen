@@ -4,6 +4,9 @@ import click
 import sexpdata
 from sexpdata import Symbol
 
+unit = 2.54
+half_unit = 2.54 / 2
+
 
 def gen_property(key: str, value: str, id: int, x: float, y: float, hidden: bool):
     if hidden:
@@ -13,11 +16,11 @@ def gen_property(key: str, value: str, id: int, x: float, y: float, hidden: bool
     return [Symbol('property'), key, value,
             [Symbol('id'), id], [Symbol('at'), x, y, 0],
             [Symbol('effects'), [Symbol('font'), [
-                Symbol('size'), 1.27, 1.27]]] + hidden_sexp
+                Symbol('size'), half_unit, half_unit]]] + hidden_sexp
             ]
 
 
-def gen_pin(input: bool, name: str, index: int, width: float, height: float, unit: float):
+def gen_pin(input: bool, name: str, index: int, width: float, height: float):
     if input:
         direction = Symbol("input")
         x = -width / 2 - unit
@@ -34,9 +37,9 @@ def gen_pin(input: bool, name: str, index: int, width: float, height: float, uni
         [Symbol("at"), x, y, angle],
         [Symbol("length"), unit],
         [Symbol("name"), name, [Symbol("effects"), [
-            Symbol("font"), [Symbol("size"), 1.27, 1.27]]]],
+            Symbol("font"), [Symbol("size"), half_unit, half_unit]]]],
         [Symbol("number"), "", [Symbol("effects"), [
-            Symbol("font"), [Symbol("size"), 1.27, 1.27]]]],
+            Symbol("font"), [Symbol("size"), half_unit, half_unit]]]],
     ]
 
 
@@ -56,9 +59,8 @@ def work(
         inputs = symbol['inputs']
         outputs = symbol['outputs']
 
-        unit = 2.54
         height = (max(len(inputs), len(outputs)) + 1) * unit
-        width = 10 * unit
+        width = symbol['width'] * unit
 
         symbol_sexp = [Symbol('symbol')]
         symbol_sexp.append(name)
@@ -81,9 +83,9 @@ def work(
 
         pin_sexp = []
         for index, pin in enumerate(inputs):
-            pin_sexp.append(gen_pin(True, pin, index, width, height, unit))
+            pin_sexp.append(gen_pin(True, pin, index, width, height))
         for index, pin in enumerate(outputs):
-            pin_sexp.append(gen_pin(False, pin, index, width, height, unit))
+            pin_sexp.append(gen_pin(False, pin, index, width, height))
 
         symbol_sexp.append([Symbol("symbol"), f"{name}_1_1"] + pin_sexp)
 

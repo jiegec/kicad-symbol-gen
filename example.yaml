@@ -1,4 +1,5 @@
 - name: ALU
+  width: 10
   inputs:
     - a[15:0]
     - b[15:0]
