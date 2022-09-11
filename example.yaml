@@ -1,0 +1,7 @@
+- name: ALU
+  inputs:
+    - a[15:0]
+    - b[15:0]
+    - op[3:0]
+  outputs:
+    - y[15:0]
