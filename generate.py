@@ -64,7 +64,18 @@ def work(
         inputs = symbol['inputs']
         outputs = symbol['outputs']
 
-        height = (max(len(inputs), len(outputs)) + 1) * unit
+        if 'sequential' in symbol:
+            sequential = symbol['sequential']
+        else:
+            sequential = False
+
+        if sequential:
+            output_len_additional = 2
+        else:
+            output_len_additional = 0
+
+        height = (max(len(inputs), len(outputs) +
+                  output_len_additional) + 1) * unit
         width = symbol['width'] * unit
 
         symbol_sexp = [Symbol('symbol')]
@@ -78,13 +89,31 @@ def work(
         symbol_sexp.append(gen_property("Footprint", "", 2, 0, 0, True))
         symbol_sexp.append(gen_property("Datasheet", "", 3, 0, 0, True))
 
+        if sequential:
+            polyline_sexp = [
+                [Symbol("polyline"), [Symbol("pts"),
+                                      [Symbol("xy"), width / 2 -
+                                       3 * unit, -height / 2],
+                                      [Symbol("xy"), width / 2 - 2 *
+                                       unit, -height / 2 + 2 * unit],
+                                      [Symbol("xy"), width / 2 -
+                                       1 * unit, -height / 2]
+                                      ],
+                    [Symbol("stroke"), [Symbol("width"), 0], [
+                        Symbol("type"), Symbol("default")], [Symbol("color"), 0, 0, 0, 0]],
+                    [Symbol("fill"), [Symbol("type"), Symbol("none")]]
+                 ]
+            ]
+        else:
+            polyline_sexp = []
+
         symbol_sexp.append([Symbol("symbol"), f"{name}_0_1",
                             [Symbol("rectangle"), [Symbol(
                                 "start"), -width / 2, height / 2], [Symbol("end"), width / 2, -height / 2],
                             [Symbol("stroke"), [Symbol("width"), 0], [
                                 Symbol("type"), Symbol("default")], [Symbol("color"), 0, 0, 0, 0]],
                             [Symbol("fill"), [Symbol("type"), Symbol("none")]]]
-                            ])
+                            ] + polyline_sexp)
 
         pin_sexp = []
         for index, pin in enumerate(inputs):

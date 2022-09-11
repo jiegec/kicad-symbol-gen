@@ -6,3 +6,15 @@
     - op[3:0]
   outputs:
     - y[15:0]
+- name: Register File
+  sequential: true
+  width: 10
+  inputs:
+    - raddr1[4:0]
+    - raddr2[4:0]
+    - waddr[4:0]
+    - wdata[15:0]
+    - wen
+  outputs:
+    - rdata1[15:0]
+    - rdata2[15:0]
