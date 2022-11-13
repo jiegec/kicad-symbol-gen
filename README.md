@@ -1,3 +1,3 @@
 # kicad-symbol-gen
 
-Genearde kicad symbol library from yaml configuration.
+Generate kicad symbol library from yaml configuration.
